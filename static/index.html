@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychology RAG Assistant</title>
+    <link rel="stylesheet" href="/static/style.css?v=1.0.2">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="chat-header">
+            <div class="header-content">
+                <div class="logo-area">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <h1>Psychology Assistant</h1>
+                </div>
+                <div class="status-indicator online"></div>
+            </div>
+        </header>
+
+        <main class="chat-area" id="chat-area">
+            <div class="welcome-message">
+                <div class="welcome-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M21 11.5C21.0031 12.8199 20.6951 14.1272 20.103 15.3128C19.5109 16.4984 18.6528 17.5262 17.605 18.3059C16.5573 19.0855 15.3523 19.5936 14.097 19.7846C12.8417 19.9756 11.5755 19.8437 10.411 19.4L4 21L5.6 14.6C5.15634 13.4355 5.02446 12.1693 5.21543 10.914C5.4064 9.65868 5.91448 8.45371 6.69411 7.40593C7.47374 6.35815 8.50157 5.50009 9.68718 4.90803C10.8728 4.31597 12.1801 4.00794 13.5 4.01103C15.4878 4.01524 17.3931 4.80665 18.7987 6.21226C20.2044 7.61787 20.9958 9.52317 21 11.5Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <h2>心理学理論アシスタント</h2>
+                <p>アドラー、フロイト、ユングなどの理論に基づいて、あなたの質問にお答えします。<br>臨床的な疑問や理論的な質問をどうぞ。</p>
+
+                <div class="suggestions">
+                    <button class="suggestion-btn">アドラーの「共同体感覚」について教えて</button>
+                    <button class="suggestion-btn">フロイトの「転移」と「逆転移」の違いは？</button>
+                    <button class="suggestion-btn">ユングの「影（シャドウ）」の臨床的な意味は？</button>
+                    <button class="suggestion-btn">短期療法における「例外探求」の例は？</button>
+                </div>
+            </div>
+        </main>
+
+        <div class="bottom-controls">
+            <form class="input-form" id="chat-form">
+                <div class="input-wrapper">
+                    <textarea id="user-input" placeholder="質問を入力してください..." rows="1"></textarea>
+                    <button type="submit" id="send-btn" class="send-btn-circle" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+            <div class="footer-text">
+                <p>Powered by RAG & GPT-4o. 回答は参考文献に基づく専門家向け参考資料です。</p>
+            </div>
+        </div>
+    </div>
+    <script src="/static/script.js?v=1.0.1"></script>
+</body>
+
+</html>

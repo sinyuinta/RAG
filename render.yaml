@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: psychology-rag-assistant
+    runtime: docker
+    plan: free # 無料プランを指定可能
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false # 管理画面から手動で設定
+      - key: PORT
+        value: 8000
+    disk:
+      name: chromadb-data
+      mountPath: /app/data
+      sizeGB: 1

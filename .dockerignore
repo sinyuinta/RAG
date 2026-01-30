@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+data/chromadb/
+.git/
+.github/
+.vscode/
+README.md
+Dockerfile
+render.yaml
