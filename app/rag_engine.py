@@ -55,13 +55,24 @@ class RAGSystem:
         )
         
         # Prepare batch data
-        batch_size = 100
+        batch_size = 50
         for i in range(0, len(chunks), batch_size):
             batch = chunks[i:i + batch_size]
             
             ids = [chunk['id'] for chunk in batch]
-            documents = [chunk['content'] for chunk in batch]
-            metadatas = [chunk['metadata'] for chunk in batch]
+            documents = [chunk.get('content', chunk.get('text', '')) for chunk in batch]
+            
+            # Build metadata from flat structure
+            metadatas = []
+            for chunk in batch:
+                meta = {
+                    'source_file': chunk.get('source_file', ''),
+                    'section_title': chunk.get('section_title', ''),
+                    'ancestor': chunk.get('ancestor', ''),
+                    'family_line': chunk.get('family_line', ''),
+                    'source_author': chunk.get('source_author', '')
+                }
+                metadatas.append(meta)
             
             # Generate embeddings
             embeddings = []
