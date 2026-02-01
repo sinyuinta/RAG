@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Psychology RAG Assistant</title>
-    <link rel="stylesheet" href="/static/style.css?v=1.0.2">
+    <link rel="stylesheet" href="/static/style.css?v=2.0.0">
+    <script src="/static/script.js?v=2.0.0" defer></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -41,7 +42,12 @@
                     </svg>
                 </div>
                 <h2>心理学理論アシスタント</h2>
-                <p>アドラー、フロイト、ユングなどの理論に基づいて、あなたの質問にお答えします。<br>臨床的な疑問や理論的な質問をどうぞ。</p>
+                <p>アドラー、フロイト、ユングなどの理論を基に、<br>多角的な視点からあなたの疑問にお答えします。</p>
+
+                <p class="disclaimer-text">
+                    ※ 生成された回答は学術的な視点を提供しますが、完全性を保証するものではありません。最終的な判断は引用元を参照の上、ご自身で行ってください。<br>
+                    当システムでは、質問に対する回答の適合度を「高・中・低」の3段階で判定し、各見出しの横に表示しています。
+                </p>
 
                 <div class="suggestions">
                     <button class="suggestion-btn">アドラーの「共同体感覚」について教えて</button>
@@ -53,6 +59,33 @@
         </main>
 
         <div class="bottom-controls">
+            <div class="mode-selector-container">
+                <div class="mode-selector">
+                    <input type="radio" id="mode-case" name="search-mode" value="case" checked>
+                    <label for="mode-case">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        ケース検討 (4学派)
+                    </label>
+
+                    <input type="radio" id="mode-term" name="search-mode" value="term">
+                    <label for="mode-term">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        用語解説 (1学派)
+                    </label>
+                    <div class="mode-glider"></div>
+                </div>
+            </div>
+
             <form class="input-form" id="chat-form">
                 <div class="input-wrapper">
                     <textarea id="user-input" placeholder="質問を入力してください..." rows="1"></textarea>
@@ -67,11 +100,10 @@
                 </div>
             </form>
             <div class="footer-text">
-                <p>Powered by RAG & GPT-4o. 回答は参考文献に基づく専門家向け参考資料です。</p>
+                <p>Powered by RAG & GPT-4o. 回答は内部ライブラリーに基づく専門知識を提供します。</p>
             </div>
         </div>
     </div>
-    <script src="/static/script.js?v=1.0.1"></script>
 </body>
 
 </html>

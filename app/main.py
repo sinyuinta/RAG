@@ -50,6 +50,7 @@ except Exception as e:
 # --- Models ---
 class QueryRequest(BaseModel):
     query: str
+    mode: str = "case"
     history: Optional[List[dict]] = None
 
 class SearchResult(BaseModel):
@@ -74,8 +75,8 @@ async def root():
     """ルートアクセスはフロントエンドへリダイレクト"""
     return RedirectResponse(url="/static/index.html")
 
-@app.post("/query", response_model=QueryResponse)
-async def query(request: QueryRequest):
+@app.post("/api/chat", response_model=QueryResponse)
+async def chat(request: QueryRequest):
     """
     質問に対して回答とソースを返す
     """
@@ -83,8 +84,8 @@ async def query(request: QueryRequest):
         raise HTTPException(status_code=503, detail="RAG System not initialized")
     
     try:
-        # 統合メソッドを使用
-        result = rag_system.chat(request.query)
+        # 統合メソッドを使用（modeを渡すように修正）
+        result = rag_system.chat(request.query, mode=request.mode)
         return result
     except Exception as e:
         print(f"Error processing query: {e}")

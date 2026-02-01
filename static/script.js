@@ -31,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle suggestion buttons
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('suggestion-btn')) {
+            e.preventDefault();
+            e.stopPropagation();
             userInput.value = e.target.textContent;
             userInput.style.height = 'auto';
             userInput.style.height = (userInput.scrollHeight) + 'px';
@@ -62,13 +64,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadingId = addLoadingIndicator();
         scrollToBottom(); // Ensure we scroll when loading appears
 
+        // Get selected mode
+        const mode = document.querySelector('input[name="search-mode"]:checked').value;
+
         try {
-            const response = await fetch('/query', {
+            const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ query: query })
+                body: JSON.stringify({
+                    query: query,
+                    mode: mode
+                })
             });
 
             if (!response.ok) {
@@ -118,10 +126,27 @@ document.addEventListener('DOMContentLoaded', () => {
         // Main answer parsed with markdown
         let htmlContent = marked.parse(data.answer);
 
-        // Color code match levels (supports 【高】, [高], or just ' 高' at the end of headings/lines)
-        htmlContent = htmlContent.replace(/[【\[]\s*高\s*[】\]]|(?:\s+)高(?=<\/h)/g, '<span class="match-tag match-high">高</span>');
-        htmlContent = htmlContent.replace(/[【\[]\s*中\s*[】\]]|(?:\s+)中(?=<\/h)/g, '<span class="match-tag match-medium">中</span>');
-        htmlContent = htmlContent.replace(/[【\[]\s*低\s*[】\]]|(?:\s+)低(?=<\/h)/g, '<span class="match-tag match-low">低</span>');
+        // Standardized match level badge parsing with Icons (Supports H2 and H3)
+        htmlContent = htmlContent.replace(/<(h[23])>(.*?) (高|中|低)<\/\1>/g, (match, tag, title, level) => {
+            let levelClass = level === '高' ? 'match-high' : (level === '中' ? 'match-medium' : 'match-low');
+            let icon = '';
+            if (level === '高') {
+                icon = '<svg class="match-icon" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>';
+            } else if (level === '中') {
+                icon = '<svg class="match-icon" viewBox="0 0 24 24"><path d="M12 2C6.47 2 2 6.47 2 12C2 17.53 6.47 22 12 22C17.53 22 22 17.53 22 12C22 6.47 17.53 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"/></svg>';
+            } else {
+                icon = '<svg class="match-icon" viewBox="0 0 24 24"><path d="M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12ZM7 13H17V11H7V13Z"/></svg>';
+            }
+
+            // Apply school specific colors based on title content
+            let schoolClass = '';
+            if (title.includes('アドラー')) schoolClass = 'school-adler';
+            else if (title.includes('フロイト')) schoolClass = 'school-freud';
+            else if (title.includes('ユング')) schoolClass = 'school-jung';
+            else if (title.includes('認知')) schoolClass = 'school-neisser';
+
+            return `<${tag} class="${schoolClass}">${title} <span class="match-tag ${levelClass}">${icon}${level}</span></${tag}>`;
+        });
 
         // Add sources if available
         if (data.sources && data.sources.length > 0) {
