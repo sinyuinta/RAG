@@ -31,4 +31,5 @@ ENV/
 
 # Data (chunks.json is large, and chroma database is local)
 # Keep chunks.json if you want to share the processed data structure
+# NOTE: ChromaDB is now included for Render deployment
 # data/chromadb/
