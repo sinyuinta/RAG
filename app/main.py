@@ -41,10 +41,17 @@ app.add_middleware(
 )
 
 # RAGシステムの初期化
+rag_system = None
+init_error = None
+
 try:
+    print("--- RAG System Initialization ---")
     rag_system = RAGSystem()
+    print("RAG System successfully initialized.")
 except Exception as e:
-    print(f"Warning: Failed to initialize RAG system. {e}")
+    init_error = str(e)
+    print(f"!!! CRITICAL ERROR: Failed to initialize RAG system !!!")
+    print(f"Details: {init_error}")
     rag_system = None
 
 # --- Models ---
@@ -81,7 +88,8 @@ async def chat(request: QueryRequest):
     質問に対して回答とソースを返す
     """
     if not rag_system:
-        raise HTTPException(status_code=503, detail="RAG System not initialized")
+        error_detail = f"RAG System not initialized. Error: {init_error}" if init_error else "RAG System not initialized."
+        raise HTTPException(status_code=503, detail=error_detail)
     
     try:
         # 統合メソッドを使用（modeを渡すように修正）
@@ -110,17 +118,29 @@ async def search(request: SearchRequest):
         print(f"Error processing search: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/stats")
-async def stats():
-    """統計情報の取得"""
-    if not rag_system:
-        return {"error": "RAG System not initialized"}
-        
-    try:
-        count = rag_system.collection.count()
-        return {
-            "total_documents": count,
-            "collection_name": rag_system.collection.name
+@app.get("/health")
+async def health():
+    """診断用エンドポイント"""
+    status = "ok" if rag_system else "error"
+    db_status = "unknown"
+    db_count = 0
+    
+    if rag_system:
+        try:
+            db_count = rag_system.collection.count()
+            db_status = "connected"
+        except Exception as e:
+            db_status = f"error: {str(e)}"
+    
+    return {
+        "status": status,
+        "rag_initialized": rag_system is not None,
+        "initialization_error": init_error,
+        "database": {
+            "status": db_status,
+            "document_count": db_count
+        },
+        "environment": {
+            "openai_api_key_set": os.getenv("OPENAI_API_KEY") is not None
         }
-    except Exception as e:
-        return {"error": str(e)}
+    }
