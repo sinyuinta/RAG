@@ -26,7 +26,57 @@ class RAGSystem:
             
         self.openai_client = OpenAI(api_key=self.api_key)
         self.chroma_client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
-        self.collection = self.chroma_client.get_collection(COLLECTION_NAME)
+        
+        # Try to get existing collection, or create and populate if it doesn't exist
+        try:
+            self.collection = self.chroma_client.get_collection(COLLECTION_NAME)
+            print(f"Loaded existing collection '{COLLECTION_NAME}' with {self.collection.count()} documents")
+        except Exception:
+            print(f"Collection '{COLLECTION_NAME}' does not exist. Creating and populating from chunks.json...")
+            self._initialize_database()
+            self.collection = self.chroma_client.get_collection(COLLECTION_NAME)
+            print(f"Created collection '{COLLECTION_NAME}' with {self.collection.count()} documents")
+    
+    def _initialize_database(self):
+        """Initialize database from chunks.json"""
+        import json
+        
+        chunks_path = "./data/chunks.json"
+        if not os.path.exists(chunks_path):
+            raise FileNotFoundError(f"chunks.json not found at {chunks_path}")
+        
+        with open(chunks_path, 'r', encoding='utf-8') as f:
+            chunks = json.load(f)
+        
+        # Create collection
+        collection = self.chroma_client.create_collection(
+            name=COLLECTION_NAME,
+            metadata={"description": "Psychology theories knowledge base"}
+        )
+        
+        # Prepare batch data
+        batch_size = 100
+        for i in range(0, len(chunks), batch_size):
+            batch = chunks[i:i + batch_size]
+            
+            ids = [chunk['id'] for chunk in batch]
+            documents = [chunk['content'] for chunk in batch]
+            metadatas = [chunk['metadata'] for chunk in batch]
+            
+            # Generate embeddings
+            embeddings = []
+            for doc in documents:
+                embedding = self._embed_query(doc)
+                embeddings.append(embedding)
+            
+            collection.add(
+                ids=ids,
+                documents=documents,
+                metadatas=metadatas,
+                embeddings=embeddings
+            )
+            
+            print(f"Added batch {i//batch_size + 1}/{(len(chunks) + batch_size - 1)//batch_size}")
 
     def _embed_query(self, query: str) -> List[float]:
         """クエリをEmbedding化（内部利用）"""
